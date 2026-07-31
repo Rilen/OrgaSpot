@@ -28,10 +28,11 @@ export async function renderDashboard(state) {
   const totalTracks = stats.totalTracks || 0;
   const dupTracks = stats.duplicateTracks || 0;
   const lixeiraCount = stats.lixeiraCount || 0;
+  const totalPlaylists = stats.totalPlaylists || 0;
 
   container.innerHTML = `
     <div class="stat-card">
-      <div class="stat-value">${stats.totalPlaylists}</div>
+      <div class="stat-value">${totalPlaylists}</div>
       <div class="stat-label">Total de Playlists</div>
     </div>
     <div class="stat-card">

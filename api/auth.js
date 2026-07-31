@@ -3,7 +3,6 @@ const {
   exchangeCodeForTokens,
   sendJson,
   handleError,
-  REDIRECT_URI,
 } = require('./_lib');
 
 /**

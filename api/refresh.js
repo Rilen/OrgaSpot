@@ -1,8 +1,5 @@
 const {
-  generateAuthUrl,
-  exchangeCodeForTokens,
   refreshAccessToken,
-  REDIRECT_URI,
   sendJson,
   handleError,
 } = require('./_lib');

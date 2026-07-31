@@ -147,18 +147,18 @@ function navigateTo(viewId) {
     case 'playlists':
       renderPlaylists();
       break;
-  case 'duplicates':
-    renderDuplicates();
-    break;
-  case 'lixeira':
-    renderLixeira();
-    break;
-  case 'creator':
-    renderCreator();
-    break;
-  case 'export':
-    renderBackup();
-    break;
+    case 'duplicates':
+      renderDuplicates();
+      break;
+    case 'lixeira':
+      renderLixeira();
+      break;
+    case 'creator':
+      renderCreator();
+      break;
+    case 'export':
+      renderBackup();
+      break;
   }
 }
 

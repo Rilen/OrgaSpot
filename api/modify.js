@@ -34,15 +34,19 @@ module.exports = async (req, res) => {
           targetPlaylistId = existing?.id || null;
           if (!existing) {
             // Create lixeira playlist
-            const me = await _sf(accessToken, '/me');
-            const created = await _sf(accessToken, `/users/${me.id}/playlists`, {
-              method: 'POST',
-              body: JSON.stringify({
-                name: LIXEIRA_NAME,
-                description: 'Tracks marked for removal',
-                public: false,
-              }),
-            });
+            const me = await spotifyFetch(accessToken, '/me');
+            const created = await spotifyFetch(
+              accessToken,
+              `/users/${me.id}/playlists`,
+              {
+                method: 'POST',
+                body: JSON.stringify({
+                  name: LIXEIRA_NAME,
+                  description: 'Tracks marked for removal',
+                  public: false,
+                }),
+              }
+            );
             targetPlaylistId = created.id;
           }
         }

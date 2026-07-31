@@ -24,7 +24,7 @@ const SCOPES = [
  * @param {string} path - API path (e.g. '/me/playlists') or full URL
  * @param {object} [options] - fetch options
  */
-async function spotifyFetch(accessToken, path, options = {}) {
+async function spotifyFetch(accessToken, path, options = {}, retries = 0) {
   const url = path.startsWith('http') ? path : SPOTIFY_API_BASE + path;
   const response = await fetch(url, {
     ...options,
@@ -35,14 +35,14 @@ async function spotifyFetch(accessToken, path, options = {}) {
     },
   });
 
-  if (response.status === 429) {
+  if (response.status === 429 && retries < 3) {
     const retryAfter = parseInt(
       response.headers.get('Retry-After') || '2',
       10
     );
     const delay = Math.min(retryAfter * 1000, 10000);
     await new Promise((resolve) => setTimeout(resolve, delay));
-    return spotifyFetch(accessToken, path, options);
+    return spotifyFetch(accessToken, path, options, retries + 1);
   }
 
   if (!response.ok) {

@@ -82,5 +82,3 @@ async function exportData(state, api, format) {
     setLoading(false);
   }
 }
-
-  // triggerExport removed — dashboard now navigates directly via app.js

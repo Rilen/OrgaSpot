@@ -30,7 +30,7 @@ export async function renderLixeira(state, api) {
       container.innerHTML = `
         <div class="lixeira-empty">
           <p>Lixeira não encontrada. Crie uma playlist chamada "${LIXEIRA_NAME}" no Spotify.</p>
-          <p>Depois escaneen duplicadas e mova-as para a lixeira.</p>
+          <p>Depois escaneie duplicadas e mova-as para a lixeira.</p>
         </div>
       `;
       return;
@@ -158,7 +158,9 @@ export async function triggerEmpty(state, api) {
 
     showToast(res.message || 'Lixeira esvaziada.', 'success');
     storage_setLastEmptied();
-    state.appState.stats.lixeiraCount = 0;
+    if (state.appState?.stats) {
+      state.appState.stats.lixeiraCount = 0;
+    }
     renderLixeira(state, api);
   } catch (err) {
     showToast(`Erro: ${err.message}`, 'error');

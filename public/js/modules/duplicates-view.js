@@ -137,7 +137,7 @@ export async function triggerScan(state, api) {
     list.innerHTML = '';
   }
 
-   setLoading(true);
+  setLoading(true);
   try {
     const data = await api.get('/api/duplicates');
     state.duplicates = data.duplicates || [];
