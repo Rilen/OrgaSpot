@@ -162,11 +162,16 @@ function sendJson(res, statusCode, data) {
  * Handle errors in a serverless function.
  */
 function handleError(res, error) {
-  const status = error.message.includes('401') ? 401 : 500;
+  const isAuthError =
+    error.message.includes('401') ||
+    error.message.includes('UNAUTHORIZED') ||
+    error.message.includes('Missing or invalid Authorization') ||
+    error.message.includes('Not authenticated');
+  const status = isAuthError ? 401 : 500;
   sendJson(res, status, {
     error: {
       message: error.message,
-      code: status === 401 ? 'UNAUTHORIZED' : 'INTERNAL_ERROR',
+      code: isAuthError ? 'UNAUTHORIZED' : 'INTERNAL_ERROR',
     },
   });
 }

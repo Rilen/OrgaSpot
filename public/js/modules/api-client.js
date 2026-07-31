@@ -96,7 +96,13 @@ class ApiClient {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `Request failed: ${response.statusText}`);
+      const errMessage = err.error?.message || `Request failed: ${response.statusText}`;
+
+      if (response.status === 401) {
+        this.clearTokens();
+      }
+
+      throw new Error(`${response.status}: ${errMessage}`);
     }
 
     return response.json();
