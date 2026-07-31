@@ -48,8 +48,13 @@ module.exports = async (req, res) => {
       lixeiraTracks = tracks.map((t) => t.track).filter(Boolean);
     }
 
-    // Find duplicates (simplified — uses same logic as /api/duplicates)
-    const duplicateCount = await countDuplicates(accessToken, playlists, lixeiraName);
+    // Find duplicates (non-blocking — if it fails, dashboard still returns basic stats)
+    let duplicateCount = 0;
+    try {
+      duplicateCount = await countDuplicates(accessToken, playlists, lixeiraName);
+    } catch (e) {
+      // Silently fail — duplicate count is not critical for initial dashboard load
+    }
 
     // Calculate totals
     const totalTracks = playlistTrackCounts.reduce(
@@ -85,18 +90,30 @@ module.exports = async (req, res) => {
 async function countDuplicates(accessToken, playlists, lixeiraName) {
   const nonLixeira = playlists.filter((p) => p.name !== lixeiraName);
   const trackMap = new Map();
+  const BATCH_SIZE = 10;
 
-  for (const pl of nonLixeira) {
-    const tracks = await fetchAllPages(accessToken, `/playlists/${pl.id}/tracks`);
-    for (const item of tracks) {
-      if (!item.track?.id) continue;
-      const key = item.track.id;
-      if (!trackMap.has(key)) {
-        trackMap.set(key, { count: 0, playlists: [] });
+  for (let i = 0; i < nonLixeira.length; i += BATCH_SIZE) {
+    const batch = nonLixeira.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.all(
+      batch.map(async (pl) => {
+        const tracks = await fetchAllPages(
+          accessToken,
+          `/playlists/${pl.id}/tracks`
+        );
+        return tracks
+          .filter((t) => t.track?.id)
+          .map((t) => ({ playlistId: pl.id, trackId: t.track.id }));
+      })
+    );
+
+    for (const results of batchResults) {
+      for (const { playlistId, trackId } of results) {
+        if (!trackMap.has(trackId)) {
+          trackMap.set(trackId, { count: 0, playlists: [] });
+        }
+        trackMap.get(trackId).count += 1;
+        trackMap.get(trackId).playlists.push(playlistId);
       }
-      const entry = trackMap.get(key);
-      entry.count += 1;
-      entry.playlists.push(pl.id);
     }
   }
 

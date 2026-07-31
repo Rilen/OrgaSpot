@@ -1,6 +1,7 @@
 const {
   getAccessToken,
   spotifyFetch,
+  fetchAllPages,
   sendJson,
   handleError,
 } = require('./_lib');
@@ -24,8 +25,6 @@ module.exports = async (req, res) => {
 
     switch (action) {
       case 'move-duplicates': {
-        const { spotifyFetch: _sf, fetchAllPages } = require('./_lib');
-
         // Find or create lixeira playlist
         let targetPlaylistId = lixeiraPlaylistId;
         if (!targetPlaylistId) {
@@ -61,7 +60,7 @@ module.exports = async (req, res) => {
           await spotifyFetch(accessToken, `/playlists/${targetPlaylistId}/tracks`, {
             method: 'POST',
             body: JSON.stringify({
-             uris: uris.slice(i, i + 100),
+              uris: uris.slice(i, i + 100),
               position: 0,
             }),
           });
@@ -110,6 +109,47 @@ module.exports = async (req, res) => {
         sendJson(res, 200, {
           message: `Emptied lixeira: removed ${trackUris.length} tracks`,
           removedCount: trackUris.length,
+        });
+        return;
+      }
+
+      case 'create-playlist': {
+        const { name, trackUris } = req.body || {};
+        if (!name) {
+          return sendJson(res, 400, {
+            error: { message: 'name is required for create-playlist' },
+          });
+        }
+
+        const me = await spotifyFetch(accessToken, '/me');
+        const playlist = await spotifyFetch(
+          accessToken,
+          `/users/${me.id}/playlists`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              name,
+              description: 'Created by OrgaSpot',
+              public: false,
+            }),
+          }
+        );
+
+        if (trackUris && trackUris.length > 0) {
+          for (let i = 0; i < trackUris.length; i += 100) {
+            const batch = trackUris.slice(i, i + 100);
+            await spotifyFetch(accessToken, `/playlists/${playlist.id}/tracks`, {
+              method: 'POST',
+              body: JSON.stringify({ uris: batch }),
+            });
+          }
+        }
+
+        sendJson(res, 200, {
+          message: `Created playlist "${name}" with ${trackUris?.length || 0} tracks`,
+          playlistId: playlist.id,
+          name: playlist.name,
+          trackCount: trackUris?.length || 0,
         });
         return;
       }
