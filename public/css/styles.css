@@ -1,0 +1,582 @@
+:root {
+  --bg: #0f1923;
+  --bg-card: #162131;
+  --bg-card-hover: #1d2b40;
+  --border: #2d3b4e;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a8b8;
+  --spotify-green: #1db954;
+  --spotify-green-hover: #1ed760;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+  --radius: 12px;
+  --transition: 0.2s ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* === Header === */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+}
+
+h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--spotify-green);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-card-hover);
+  border-radius: var(--radius);
+  padding: 0.25rem;
+}
+
+.nav-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg);
+}
+
+.nav-tab.active {
+  color: var(--bg);
+  background: var(--spotify-green);
+}
+
+.nav-tab.active:hover {
+  background: var(--spotify-green-hover);
+  color: var(--bg);
+}
+
+.auth-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.auth-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.auth-connected {
+  background: rgba(29, 185, 84, 0.15);
+  color: var(--spotify-green);
+}
+
+.auth-disconnected {
+  background: rgba(231, 76, 60, 0.15);
+  color: var(--danger);
+}
+
+/* === Buttons === */
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-primary {
+  background: var(--spotify-green);
+  color: var(--bg);
+}
+
+.btn-primary:hover {
+  background: var(--spotify-green-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: rgba(231, 76, 60, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(231, 76, 60, 0.3);
+}
+
+.btn-sm {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+}
+
+/* === Main Content === */
+.app-main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.view-section {
+  display: none;
+}
+
+.view-section.active {
+  display: block;
+}
+
+/* === Dashboard === */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.stat-card:hover {
+  border-color: var(--spotify-green);
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--spotify-green);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.3rem;
+}
+
+.stat-card.danger .stat-value {
+  color: var(--danger);
+}
+
+.stat-card.warning .stat-value {
+  color: var(--warning);
+}
+
+.quick-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* === Taxonomy Legend === */
+.taxonomy-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.taxonomy-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.taxonomy-tag.valid {
+  border-color: var(--spotify-green);
+  color: var(--spotify-green);
+}
+
+.taxonomy-tag.invalid {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* === Playlist List === */
+.playlist-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.playlist-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  transition: var(--transition);
+}
+
+.playlist-card:hover {
+  border-color: var(--spotify-green);
+}
+
+.playlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.7rem;
+}
+
+.playlist-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.playlist-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+.taxonomy-badge {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.taxonomy-badge.ok {
+  background: rgba(29, 185, 84, 0.15);
+  color: var(--spotify-green);
+}
+
+.taxonomy-badge.warning {
+  background: rgba(243, 155, 18, 0.15);
+  color: var(--warning);
+}
+
+/* === Duplicates === */
+.duplicates-controls {
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dup-summary {
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.dup-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.dup-track-info {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.dup-track-cover {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.dup-track-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.dup-track-artists {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.dup-occurrences {
+  margin-top: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.dup-occurrence {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+}
+
+/* === Lixeira === */
+.lixeira-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.lixeira-header h2 {
+  margin: 0;
+}
+
+.lixeira-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+/* === Export Panel === */
+.export-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+}
+
+.export-panel h2 {
+  margin-bottom: 1rem;
+}
+
+.export-options {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.export-option:hover {
+  border-color: var(--spotify-green);
+  background: var(--bg);
+}
+
+.export-option input[type="radio"] {
+  accent-color: var(--spotify-green);
+}
+
+/* === Modal === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+  z-index: 1000;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  max-width: 420px;
+  width: 90%;
+}
+
+.modal h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.modal p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.3rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.7rem;
+  justify-content: flex-end;
+}
+
+/* === Toasts === */
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem 1.2rem;
+  font-size: 0.85rem;
+  min-width: 280px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast.success {
+  border-color: var(--spotify-green);
+}
+
+.toast.error {
+  border-color: var(--danger);
+}
+
+.toast.warning {
+  border-left: 4px solid var(--warning);
+}
+
+.toast-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+}
+
+.toast.success .toast-header { color: var(--spotify-green); }
+.toast.error .toast-header { color: var(--danger); }
+
+/* === Loading Spinner === */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--spotify-green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* === Responsive === */
+@media (max-width: 640px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+  .nav-tabs {
+    order: 3;
+    width: 100%;
+  }
+  .quick-actions {
+    flex-direction: column;
+  }
+  .app-main {
+    padding: 1rem;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,83 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OrgaSpot - Spotify Account Organization</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;
-      background: #0f1923;
-      color: #ffffff;
-      line-height: 1.6;
-    }
-    h1 { color: #1db954; }
-    .section { margin-bottom: 2rem; }
-    code {
-      background: #232d3a;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.9em;
-    }
-    pre {
-      background: #232d3a;
-      padding: 1rem;
-      border-radius: 8px;
-      overflow-x: auto;
-    }
-    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-    th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #2d3b4e; }
-    a { color: #1db954; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OrgaSpot • Spotify Playlist Manager</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="/css/styles.css"/>
 </head>
 <body>
-  <h1>OrgaSpot</h1>
-  <p>A CLI tool for cleaning up and organizing your Spotify account.</p>
+  <header class="app-header">
+    <div class="header-left">
+      <img src="/assets/favicon.svg" alt="OrgaSpot" class="logo"/>
+      <h1>OrgaSpot</h1>
+    </div>
+    <nav class="nav-tabs" id="navTabs"></nav>
+    <div class="auth-section" id="authSection"></div>
+  </header>
 
-  <div class="section">
-    <h2>Quick Start</h2>
-    <pre><code>npm install
-npm start setup
-npm start scan-duplicates
-npm start validate-taxonomy</code></pre>
+  <main class="app-main">
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view-section active">
+      <div class="dashboard-grid" id="dashboardGrid"></div>
+      <div class="quick-actions" id="quickActions"></div>
+    </section>
+
+    <!-- Playlists -->
+    <section id="view-playlists" class="view-section">
+      <div class="taxonomy-legend"></div>
+      <div class="playlist-list" id="playlistList"></div>
+    </section>
+
+    <!-- Duplicates -->
+    <section id="view-duplicates" class="view-section">
+      <div class="duplicates-controls" id="duplicatesControls"></div>
+      <div class="duplicates-list" id="duplicatesList"></div>
+    </section>
+
+    <!-- Lixeira -->
+    <section id="view-lixeira" class="view-section">
+      <div class="lixeira-header">
+        <h2>🧹 Lixeira / Repetidas</h2>
+        <button class="btn btn-ghost" id="emptyLixeiraBtn">Esvaziar Lixeira (Mensal)</button>
+        <button class="btn btn-ghost" id="previewEmptyBtn">Preview (dry-run)</button>
+      </div>
+      <div class="lixeira-list" id="lixeiraList"></div>
+    </section>
+
+    <!-- Export -->
+    <section id="view-export" class="view-section">
+      <div class="export-panel" id="exportPanel"></div>
+    </section>
+  </main>
+
+  <!-- Modal: Confirm -->
+  <div class="modal-overlay" id="confirmModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h3 id="confirmTitle"></h3>
+      <p id="confirmBody"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="confirmCancel">Cancelar</button>
+        <button class="btn btn-primary" id="confirmAction">Confirmar</button>
+      </div>
+    </div>
   </div>
 
-  <div class="section">
-    <h2>CLI Commands</h2>
-    <table>
-      <thead>
-        <tr><th>Command</th><th>Purpose</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><code>setup</code></td><td>Initialize lixeira and default playlists</td></tr>
-        <tr><td><code>scan-duplicates</code></td><td>Find tracks across multiple playlists</td></tr>
-        <tr><td><code>move-duplicates</code></td><td>Move duplicates to lixeira playlist</td></tr>
-        <tr><td><code>empty-lixeira</code></td><td>Monthly purge (supports <code>--dry-run</code>)</td></tr>
-        <tr><td><code>export-playlists</code></td><td>Backup playlists to CSV/JSON</td></tr>
-        <tr><td><code>validate-taxonomy</code></td><td>Check naming convention compliance</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
 
-  <div class="section">
-    <h2>Blueprint</h2>
-    <p>Based on the Spotify Account Organization Blueprint:</p>
-    <ul>
-      <li><strong>🧹 [LIXEIRA / REPETIDAS]</strong> - Temporary duplicate storage</li>
-      <li><strong>⭐ [FAVORITOS]</strong> - Main tracks in rotation</li>
-      <li><strong>🎸 [GÊNERO / ESTILO]</strong> - Thematic genre playlists</li>
-      <li><strong>🧠 [FOCO / TRABALHO]</strong> - Instrumental/lo-fi for focus</li>
-      <li><strong>🚗 [ROADTRIP / VIAGEM]</strong> - Travel playlists</li>
-      <li><strong>📦 [ARQUIVO]</strong> - Sentimental archive playlists</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>Repository</h2>
-    <p><a href="https://github.com/Rilen/OrgaSpot">github.com/Rilen/OrgaSpot</a></p>
-  </div>
+  <script type="module" src="/js/app.js"></script>
 </body>
 </html>
