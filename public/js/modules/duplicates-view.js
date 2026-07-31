@@ -137,15 +137,16 @@ export async function triggerScan(state, api) {
     list.innerHTML = '';
   }
 
-  setLoading(true);
+   setLoading(true);
   try {
     const data = await api.get('/api/duplicates');
     state.duplicates = data.duplicates || [];
     state.hasLixeira = data.hasLixeira;
     state.lixeiraCount = data.lixeiraCount;
     state.lixeiraId = data.lixeiraId;
+    state.duplicateCount = data.totalCount || 0;
 
-    if (data.duplicates.length === 0) {
+    if (state.duplicates.length === 0) {
       showToast('Nenhuma duplicata encontrada!', 'success');
       if (controls) {
         controls.innerHTML = `
@@ -160,7 +161,13 @@ export async function triggerScan(state, api) {
       renderDuplicatesList(state.duplicates, list, api);
     }
   } catch (err) {
-    showToast(`Erro ao escanear: ${err.message}`, 'error');
+    if (err.message.includes('403') || err.message.includes('Forbidden')) {
+      showToast('Erro de permissão. Reconecte ao Spotify para renovar as permissões.', 'error');
+    } else if (err.message.includes('429')) {
+      showToast('Limite de requisições excedido. Tente novamente em alguns minutos.', 'warning');
+    } else {
+      showToast(`Erro ao escanear: ${err.message}`, 'error');
+    }
   } finally {
     setLoading(false);
   }

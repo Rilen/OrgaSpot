@@ -25,6 +25,9 @@ export async function renderDashboard(state) {
   }
 
   const { stats } = state.appState;
+  const totalTracks = stats.totalTracks || 0;
+  const dupTracks = stats.duplicateTracks || 0;
+  const lixeiraCount = stats.lixeiraCount || 0;
 
   container.innerHTML = `
     <div class="stat-card">
@@ -32,15 +35,15 @@ export async function renderDashboard(state) {
       <div class="stat-label">Total de Playlists</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value">${stats.totalTracks.toLocaleString()}</div>
+      <div class="stat-value">${totalTracks.toLocaleString()}</div>
       <div class="stat-label">Total de Faixas</div>
     </div>
-    <div class="stat-card${stats.duplicateTracks > 0 ? ' danger' : ''}">
-      <div class="stat-value">${stats.duplicateTracks}</div>
+    <div class="stat-card${dupTracks > 0 ? ' danger' : ''}">
+      <div class="stat-value">${dupTracks}</div>
       <div class="stat-label">Duplicatas Encontradas</div>
     </div>
-    <div class="stat-card${stats.lixeiraCount > 0 ? ' warning' : ''}">
-      <div class="stat-value">${stats.lixeiraCount}</div>
+    <div class="stat-card${lixeiraCount > 0 ? ' warning' : ''}">
+      <div class="stat-value">${lixeiraCount}</div>
       <div class="stat-label">Na Lixeira</div>
     </div>
   `;

@@ -28,14 +28,13 @@ export async function renderPlaylists(state) {
   container.innerHTML = '';
 
   try {
-    if (!state.appState) {
-      const data = await apiClient.get('/api/playlists');
-      state.playlists = data.playlists;
-    }
+    // Always fetch from playlists endpoint — dashboard data lacks taxonomy field
+    const data = await apiClient.get('/api/playlists');
+    state.playlists = data.playlists;
 
     state.playlists.forEach((pl) => {
-      const badgeClass = pl.taxonomy.valid ? 'ok' : 'warning';
-      const badgeText = pl.taxonomy.valid ? '✓ OK' : '⚠ Revisar';
+      const badgeClass = pl.taxonomy?.valid ? 'ok' : 'warning';
+      const badgeText = pl.taxonomy?.valid ? '✓ OK' : '⚠ Revisar';
 
       const card = document.createElement('div');
       card.className = 'playlist-card';
@@ -49,13 +48,13 @@ export async function renderPlaylists(state) {
           </div>
           <span class="taxonomy-badge ${badgeClass}">${badgeText}</span>
         </div>
-        ${
-          !pl.taxonomy.valid
-            ? `<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">
-                ${escapeHtml(pl.taxonomy.suggestion || '')}
+          ${
+            !pl.taxonomy?.valid
+              ? `<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:0.4rem;">
+                ${escapeHtml(pl.taxonomy?.suggestion || 'Renomeie para seguir a taxonomia.')}
                </div>`
-            : ''
-        }
+              : ''
+          }
       `;
       container.appendChild(card);
     });
