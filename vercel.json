@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "cleanOutputs": true,
   "builds": [
     {
       "src": "public/index.html",
