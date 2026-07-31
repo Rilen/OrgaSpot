@@ -93,6 +93,32 @@ function renderAuthSection() {
     badge.textContent = `✓ Conectado: ${state.user?.displayName || 'Spotify'}`;
     container.appendChild(badge);
 
+    const reconnectBtn = document.createElement('button');
+    reconnectBtn.className = 'btn btn-ghost btn-sm';
+    reconnectBtn.title = 'Limpa o token atual e autoriza novamente (necessário se ocorrer erro de permissão)';
+    reconnectBtn.textContent = '⟳ Reconectar';
+    reconnectBtn.addEventListener('click', async () => {
+      const ok = await showConfirmModal(
+        'Reconectar ao Spotify',
+        'Isso limpará o token atual e abrirá uma nova autorização para renovar as permissões. Continuar?'
+      );
+      if (!ok) return;
+      apiClient.clearTokens();
+      storage.clear();
+      state.user = null;
+      state.playlists = [];
+      state.duplicates = [];
+      setLoading(true);
+      try {
+        const url = await apiClient.getAuthUrl();
+        window.location.href = url;
+      } catch (err) {
+        showToast(`Erro ao conectar: ${err.message}`, 'error');
+        setLoading(false);
+      }
+    });
+    container.appendChild(reconnectBtn);
+
     const logoutBtn = document.createElement('button');
     logoutBtn.className = 'btn btn-ghost btn-sm';
     logoutBtn.textContent = 'Desconectar';
@@ -207,7 +233,24 @@ function renderBackup() {
 }
 
 // Expose navigation for potential cross-module calls
-export { navigateTo, loadData, state };
+export { navigateTo, loadData, state, forceReconnect };
+
+// Force a fresh Spotify authorization (clears stale tokens)
+async function forceReconnect() {
+  apiClient.clearTokens();
+  storage.clear();
+  state.user = null;
+  state.playlists = [];
+  state.duplicates = [];
+  setLoading(true);
+  try {
+    const url = await apiClient.getAuthUrl();
+    window.location.href = url;
+  } catch (err) {
+    showToast(`Erro ao conectar: ${err.message}`, 'error');
+    setLoading(false);
+  }
+}
 
 // Initialize app
 initApp();

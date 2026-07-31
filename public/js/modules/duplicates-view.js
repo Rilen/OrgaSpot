@@ -162,9 +162,34 @@ export async function triggerScan(state, api) {
     }
   } catch (err) {
     if (err.message.includes('403') || err.message.includes('Forbidden')) {
-      showToast('Erro de permissão. Reconecte ao Spotify para renovar as permissões.', 'error');
+      showToast(
+        'Permissão insuficiente. O token pode estar desatualizado. Clique em "⟳ Reconectar" no topo para renovar.',
+        'error',
+        7000
+      );
+      if (controls) {
+        controls.innerHTML = `
+          <div class="dup-summary">
+            <strong>Permissão negada pelo Spotify (403).</strong><br>
+            Suas permissões podem estar desatualizadas ou o app não tem acesso à sua conta.
+          </div>
+          <div style="display:flex;gap:1rem;">
+            <button class="btn btn-primary" id="reconnectBtn">⟳ Reconectar ao Spotify</button>
+            <button class="btn btn-ghost" id="retryScanBtn">Tentar novamente</button>
+          </div>
+        `;
+        const rc = document.getElementById('reconnectBtn');
+        if (rc) rc.addEventListener('click', async () => {
+          const app = await import('../app.js');
+          app.forceReconnect();
+        });
+        const rs = document.getElementById('retryScanBtn');
+        if (rs) rs.addEventListener('click', () => triggerScan(state, api));
+      }
     } else if (err.message.includes('429')) {
       showToast('Limite de requisições excedido. Tente novamente em alguns minutos.', 'warning');
+    } else if (err.message.includes('401')) {
+      showToast('Sessão expirada. Clique em "⟳ Reconectar" para renovar.', 'warning');
     } else {
       showToast(`Erro ao escanear: ${err.message}`, 'error');
     }
