@@ -559,6 +559,18 @@ h1 {
   to { transform: rotate(360deg); }
 }
 
+/* === Loading Overlay === */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 25, 35, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(2px);
+}
+
 /* === Responsive === */
 @media (max-width: 640px) {
   .app-header {

@@ -208,3 +208,6 @@ function renderBackup() {
 
 // Expose navigation for potential cross-module calls
 export { navigateTo, loadData, state };
+
+// Initialize app
+initApp();

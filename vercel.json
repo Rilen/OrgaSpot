@@ -1,9 +1,4 @@
 {
   "version": 2,
-  "outputDirectory": "public",
-  "functions": {
-    "api/*.js": {
-      "runtime": "nodejs22.x"
-    }
-  }
+  "outputDirectory": "public"
 }
