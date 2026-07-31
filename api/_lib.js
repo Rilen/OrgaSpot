@@ -1,8 +1,10 @@
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI =
-  process.env.SPOTIFY_REDIRECT_URI ||
-  'https://orgaspot.vercel.app/api/auth';
+
+const RAW_REDIRECT = process.env.SPOTIFY_REDIRECT_URI || 'https://orgaspot.vercel.app';
+const REDIRECT_URI = RAW_REDIRECT.includes('/api/auth')
+  ? RAW_REDIRECT
+  : RAW_REDIRECT.replace(/\/$/, '') + '/api/auth';
 
 const SPOTIFY_AUTH_BASE = 'https://accounts.spotify.com';
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
