@@ -163,20 +163,28 @@ export async function triggerScan(state, api) {
   } catch (err) {
     if (err.message.includes('403') || err.message.includes('Forbidden')) {
       showToast(
-        'Permissão insuficiente. O token pode estar desatualizado. Clique em "⟳ Reconectar" no topo para renovar.',
+        'Permissão negada pelo Spotify. Detalhe: ' + err.message,
         'error',
-        7000
+        9000
       );
       if (controls) {
         controls.innerHTML = `
           <div class="dup-summary">
             <strong>Permissão negada pelo Spotify (403).</strong><br>
-            Suas permissões podem estar desatualizadas ou o app não tem acesso à sua conta.
+            Detalhe técnico: <code>${escapeHtml(err.message)}</code><br><br>
+            Causas comuns:
+            <ul style="margin:0.5rem 0 0 1.2rem;color:var(--text-secondary);font-size:0.82rem;">
+              <li>Token sem o scope <code>playlist-read-private</code></li>
+              <li>App em <strong>Development Mode</strong> e sua conta não adicionada em Users</li>
+              <li>Conta Premium limitada (raramente)</li>
+            </ul>
           </div>
-          <div style="display:flex;gap:1rem;">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
             <button class="btn btn-primary" id="reconnectBtn">⟳ Reconectar ao Spotify</button>
             <button class="btn btn-ghost" id="retryScanBtn">Tentar novamente</button>
+            <button class="btn btn-ghost" id="diagnoseBtn">🔬 Diagnosticar</button>
           </div>
+          <div id="diagnoseResult" style="margin-top:0.75rem;font-size:0.85rem;"></div>
         `;
         const rc = document.getElementById('reconnectBtn');
         if (rc) rc.addEventListener('click', async () => {
@@ -185,6 +193,25 @@ export async function triggerScan(state, api) {
         });
         const rs = document.getElementById('retryScanBtn');
         if (rs) rs.addEventListener('click', () => triggerScan(state, api));
+        const dbg = document.getElementById('diagnoseBtn');
+        if (dbg) dbg.addEventListener('click', async () => {
+          const resultEl = document.getElementById('diagnoseResult');
+          resultEl.textContent = 'Executando diagnóstico... 🔄';
+          try {
+            const d = await api.get('/api/diagnose');
+            resultEl.innerHTML = `
+              <strong>Resultado do diagnóstico:</strong><br>
+              Conta: ${escapeHtml(d.profile?.displayName || d.profile?.id || '—')}<br>
+              Ler playlists (/me/playlists): <b style="color:${d.testPlaylists.ok ? 'var(--spotify-green)' : 'var(--danger)'}">${d.testPlaylists.ok ? 'OK' : 'FALHOU'}</b>
+              ${d.testPlaylists.error ? ' — ' + escapeHtml(d.testPlaylists.error) : ''}<br>
+              Ler faixas de playlist: <b style="color:${d.testPlaylistTracks.ok ? 'var(--spotify-green)' : 'var(--danger)'}">${d.testPlaylistTracks.ok ? 'OK' : 'FALHOU'}</b>
+              ${d.testPlaylistTracks.error ? ' — ' + escapeHtml(d.testPlaylistTracks.error) : ''}<br>
+              Token: ${escapeHtml(d.tokenPrefix || 'ausente')}
+            `;
+          } catch (e) {
+            resultEl.innerHTML = `<span style="color:var(--danger);">Falha no diagnóstico: ${escapeHtml(e.message)}</span>`;
+          }
+        });
       }
     } else if (err.message.includes('429')) {
       showToast('Limite de requisições excedido. Tente novamente em alguns minutos.', 'warning');
