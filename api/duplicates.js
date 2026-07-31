@@ -28,16 +28,23 @@ module.exports = async (req, res) => {
       const batch = targetPlaylists.slice(i, i + BATCH_SIZE);
       const batchResults = await Promise.all(
         batch.map(async (pl) => {
-          const tracks = await fetchAllPages(
-            accessToken,
-            `/playlists/${pl.id}/tracks`
-          );
-          return tracks.map((t) => ({
-            track: t.track,
-            addedAt: t.added_at,
-            playlistId: pl.id,
-            playlistName: pl.name,
-          })).filter((t) => t.track?.id);
+          try {
+            const tracks = await fetchAllPages(
+              accessToken,
+              `/playlists/${pl.id}/tracks`
+            );
+            return tracks.map((t) => ({
+              track: t.track,
+              addedAt: t.added_at,
+              playlistId: pl.id,
+              playlistName: pl.name,
+            })).filter((t) => t.track?.id);
+          } catch (e) {
+            const detail = e.message || 'unknown error';
+            throw new Error(
+              `Falha ao ler playlist "${pl.name}" (id ${pl.id}): ${detail}`
+            );
+          }
         })
       );
 
@@ -76,8 +83,16 @@ module.exports = async (req, res) => {
 
     let lixeiraCount = 0;
     if (hasLixeira && lixeira) {
-      const lixeiraDetails = await spotifyFetch(accessToken, `/playlists/${lixeira.id}`);
-      lixeiraCount = lixeiraDetails.tracks.total;
+      try {
+        const lixeiraDetails = await spotifyFetch(
+          accessToken,
+          `/playlists/${lixeira.id}`
+        );
+        lixeiraCount = lixeiraDetails.tracks?.total || 0;
+      } catch (e) {
+        // Non-fatal — lixeira count is secondary to duplicate detection
+        lixeiraCount = 0;
+      }
     }
 
     sendJson(res, 200, {
