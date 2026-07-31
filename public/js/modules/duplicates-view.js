@@ -65,6 +65,53 @@ export function renderDuplicatesControls(state, api, container) {
   document.getElementById('refreshScanBtn').addEventListener('click', () => {
     triggerScan(state, api);
   });
+  attachSkippedDeleteHandlers(state, api);
+}
+
+async function deleteSkippedPlaylist(state, api, playlistId, playlistName) {
+  const confirmed = await showConfirmModal(
+    'Excluir playlist da biblioteca',
+    `Deixar de seguir "${playlistName}"?\n\nIsso remove a playlist da sua biblioteca Spotify (você não é dono dela). Esta ação não pode ser desfeita.`
+  );
+  if (!confirmed) return;
+
+  setLoading(true);
+  try {
+    const res = await api.post('/api/modify', {
+      action: 'unfollow-playlist',
+      playlistId,
+    });
+    showToast(res.message || 'Playlist removida.', 'success');
+
+    // Remove from skipped list and re-render
+    state.skippedPlaylists = (state.skippedPlaylists || []).filter(
+      (s) => s.id !== playlistId
+    );
+    const controls = document.getElementById('duplicatesControls');
+    if (controls) {
+      renderDuplicatesControls(state, api, controls);
+      if (state.duplicates && state.duplicates.length > 0) {
+        renderDuplicatesList(state.duplicates, document.getElementById('duplicatesList'), api);
+      }
+    }
+  } catch (err) {
+    showToast(`Erro ao excluir: ${err.message}`, 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function attachSkippedDeleteHandlers(state, api) {
+  document.querySelectorAll('.skip-delete-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      deleteSkippedPlaylist(
+        state,
+        api,
+        btn.dataset.playlistId,
+        btn.dataset.playlistName
+      );
+    });
+  });
 }
 
 export function renderDuplicatesList(duplicates, container, api) {
@@ -165,6 +212,7 @@ export async function triggerScan(state, api) {
           <span style="color: var(--text-secondary); margin-left: 1rem;">Tudo limpo!</span>
         `;
         document.getElementById('scanDuplicatesBtn').addEventListener('click', () => triggerScan(state, api));
+        attachSkippedDeleteHandlers(state, api);
       }
     } else {
       showToast(`${data.duplicates.length} duplicatas encontradas.`, 'info');
@@ -313,19 +361,24 @@ function formatDate(dateString) {
   });
 }
 
-function renderSkippedWarning(skipped) {
+function renderSkippedWarning(skipped, api) {
   if (!skipped || skipped.length === 0) return '';
+
   const list = skipped
-    .slice(0, 5)
-    .map((s) => `<li>${escapeHtml(s.name)}</li>`)
+    .map((s) => `
+      <li style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.name)}</span>
+        <button class="btn btn-danger btn-sm skip-delete-btn" data-playlist-id="${s.id}" data-playlist-name="${escapeHtml(s.name)}">Excluir</button>
+      </li>
+    `)
     .join('');
-  const extra = skipped.length > 5
-    ? `<li>... e mais ${skipped.length - 5} playlist(s)</li>`
-    : '';
+
   return `
     <div class="dup-summary" style="border-color:var(--warning);">
-      <strong>⚠ ${skipped.length} playlist(s) pulada(s)</strong> por acesso negado (playlists seguidas/restritas ou indisponíveis).
-      <ul style="margin:0.4rem 0 0 1.2rem;color:var(--text-secondary);font-size:0.82rem;">${list}${extra}</ul>
+      <strong>⚠ ${skipped.length} playlist(s) restrita(s)/inacessível(is)</strong> — não foi possível ler as faixas.
+      <ul style="margin:0.4rem 0 0 0;color:var(--text-secondary);font-size:0.85rem;list-style:none;padding:0;">
+        ${list}
+      </ul>
     </div>
   `;
 }

@@ -158,6 +158,25 @@ module.exports = async (req, res) => {
         return;
       }
 
+      case 'unfollow-playlist': {
+        const { playlistId } = req.body || {};
+        if (!playlistId) {
+          return sendJson(res, 400, {
+            error: { message: 'playlistId is required for unfollow-playlist' },
+          });
+        }
+
+        await spotifyFetch(accessToken, `/playlists/${playlistId}/followers`, {
+          method: 'DELETE',
+        });
+
+        sendJson(res, 200, {
+          message: 'Playlist removida da sua biblioteca (deixou de seguir).',
+          playlistId,
+        });
+        return;
+      }
+
       default:
         sendJson(res, 400, {
           error: { message: `Unknown action: ${action}` },
