@@ -35,6 +35,16 @@ async function spotifyFetch(accessToken, path, options = {}) {
     },
   });
 
+  if (response.status === 429) {
+    const retryAfter = parseInt(
+      response.headers.get('Retry-After') || '2',
+      10
+    );
+    const delay = Math.min(retryAfter * 1000, 10000);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    return spotifyFetch(accessToken, path, options);
+  }
+
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
     throw new Error(

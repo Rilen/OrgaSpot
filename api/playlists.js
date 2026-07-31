@@ -17,28 +17,26 @@ module.exports = async (req, res) => {
     const accessToken = getAccessToken(req);
     const playlists = await fetchAllPages(accessToken, '/me/playlists');
 
-    const playlistData = await Promise.all(
-      playlists.map(async (pl) => {
-        const details = await spotifyFetch(accessToken, `/playlists/${pl.id}`);
-        const taxonomy = validateTaxonomy(pl.name);
+    // Use track count from playlist object (already included in /me/playlists response)
+    const playlistData = playlists.map((pl) => {
+      const taxonomy = validateTaxonomy(pl.name);
 
-        return {
-          id: pl.id,
-          name: pl.name,
-          description: pl.description || '',
-          owner: pl.owner?.display_name || pl.owner?.id,
-          trackCount: details.tracks.total,
-          isPublic: pl.public,
-          isLixeira: pl.name === LIXEIRA_NAME,
-          taxonomy: {
-            valid: taxonomy.valid,
-            category: taxonomy.category,
-            suggestion: taxonomy.suggestion,
-          },
-          externalUrl: pl.external_urls?.spotify,
-        };
-      })
-    );
+      return {
+        id: pl.id,
+        name: pl.name,
+        description: pl.description || '',
+        owner: pl.owner?.display_name || pl.owner?.id,
+        trackCount: pl.tracks?.total || 0,
+        isPublic: pl.public,
+        isLixeira: pl.name === LIXEIRA_NAME,
+        taxonomy: {
+          valid: taxonomy.valid,
+          category: taxonomy.category,
+          suggestion: taxonomy.suggestion,
+        },
+        externalUrl: pl.external_urls?.spotify,
+      };
+    });
 
     sendJson(res, 200, { playlists: playlistData });
   } catch (err) {
