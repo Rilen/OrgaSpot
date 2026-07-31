@@ -1,4 +1,4 @@
-# OrgaSpot - Spotify Account Organization Toolkit
+# OrgaSpot
 
 A CLI tool for cleaning up and organizing your Spotify account, implementing a governance blueprint for playlist management and duplicate removal.
 
@@ -13,7 +13,7 @@ This project implements the Spotify Account Organization Blueprint:
 
 ```bash
 npm install
-npm run build
+npm run dev
 ```
 
 ## Configuration
@@ -27,6 +27,17 @@ SPOTIFY_REDIRECT_URI=http://localhost:8888/callback
 ```
 
 Get your credentials from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+
+## CLI Commands
+
+| Command | Purpose |
+|---|---|
+| `orgaspot setup` | Creates 🧹 [LIXEIRA / REPETIDAS], ⭐ [FAVORITOS], 📦 [ARQUIVO] |
+| `orgaspot scan-duplicates` | Finds tracks appearing in >1 playlist |
+| `orgaspot move-duplicates` | Moves duplicates to lixeira playlist |
+| `orgaspot empty-lixeira` | Monthly purge of lixeira (supports `--dry-run`) |
+| `orgaspot export-playlists` | Backs up playlists to CSV/JSON |
+| `orgaspot validate-taxonomy` | Checks playlists match naming convention |
 
 ## License
 
