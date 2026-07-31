@@ -1,6 +1,6 @@
-import storage from './storage.js';
-import { showToast, setLoading, showConfirmModal } from './ui-helpers.js';
-import apiClient from './api-client.js';
+import storage from './modules/storage.js';
+import { showToast, setLoading, showConfirmModal } from './modules/ui-helpers.js';
+import apiClient from './modules/api-client.js';
 
 /**
  * Application controller — handles routing, auth, and view orchestration.
@@ -147,18 +147,18 @@ function navigateTo(viewId) {
     case 'playlists':
       renderPlaylists();
       break;
-    case 'duplicates':
-      renderDuplicates();
-      break;
-    case 'lixeira':
-      renderLixeira();
-      break;
-    case 'creator':
-      renderCreator();
-      break;
-    case 'export':
-      renderBackup();
-      break;
+  case 'duplicates':
+    renderDuplicates();
+    break;
+  case 'lixeira':
+    renderLixeira();
+    break;
+  case 'creator':
+    renderCreator();
+    break;
+  case 'export':
+    renderBackup();
+    break;
   }
 }
 
@@ -181,29 +181,29 @@ async function loadData() {
 // === View Renderers (lazy imports to avoid circular dependencies) ===
 
 function renderDashboard() {
-  import('./dashboard.js').then((mod) => mod.renderDashboard(state));
+  import('./modules/dashboard.js').then((mod) => mod.renderDashboard(state));
 }
 
 function renderPlaylists() {
-  import('./playlists.js').then((mod) => mod.renderPlaylists(state));
+  import('./modules/playlists.js').then((mod) => mod.renderPlaylists(state));
 }
 
 function renderDuplicates() {
-  import('./duplicates-view.js').then((mod) => mod.renderDuplicates(state, apiClient));
+  import('./modules/duplicates-view.js').then((mod) => mod.renderDuplicates(state, apiClient));
 }
 
 function renderLixeira() {
-  import('./lixeira.js').then((mod) => mod.renderLixeira(state, apiClient));
+  import('./modules/lixeira.js').then((mod) => mod.renderLixeira(state, apiClient));
 }
 
 function renderCreator() {
-  import('./playlist-creator.js').then((mod) =>
+  import('./modules/playlist-creator.js').then((mod) =>
     mod.renderCreator(state, apiClient)
   );
 }
 
 function renderBackup() {
-  import('./backup.js').then((mod) => mod.renderBackup(state, apiClient));
+  import('./modules/backup.js').then((mod) => mod.renderBackup(state, apiClient));
 }
 
 // Expose navigation for potential cross-module calls
