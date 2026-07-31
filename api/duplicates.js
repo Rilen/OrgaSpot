@@ -22,6 +22,7 @@ module.exports = async (req, res) => {
 
     // Fetch all tracks from each playlist concurrently (with concurrency limit)
     const trackMap = new Map();
+    const skipped = [];
     const BATCH_SIZE = 5;
 
     for (let i = 0; i < targetPlaylists.length; i += BATCH_SIZE) {
@@ -33,23 +34,38 @@ module.exports = async (req, res) => {
               accessToken,
               `/playlists/${pl.id}/tracks`
             );
-            return tracks.map((t) => ({
-              track: t.track,
-              addedAt: t.added_at,
-              playlistId: pl.id,
-              playlistName: pl.name,
-            })).filter((t) => t.track?.id);
+            return {
+              pl,
+              occurrences: tracks
+                .map((t) => ({
+                  track: t.track,
+                  addedAt: t.added_at,
+                  playlistId: pl.id,
+                  playlistName: pl.name,
+                }))
+                .filter((t) => t.track?.id),
+            };
           } catch (e) {
-            const detail = e.message || 'unknown error';
-            throw new Error(
-              `Falha ao ler playlist "${pl.name}" (id ${pl.id}): ${detail}`
-            );
+            // Skip inaccessible playlists (e.g. followed/restricted ones) instead of
+            // aborting the whole scan.
+            return {
+              pl,
+              error: e.message || 'unknown error',
+            };
           }
         })
       );
 
-      for (const occurrences of batchResults) {
-        for (const occ of occurrences) {
+      for (const result of batchResults) {
+        if (result.error) {
+          skipped.push({
+            id: result.pl.id,
+            name: result.pl.name,
+            error: result.error,
+          });
+          continue;
+        }
+        for (const occ of result.occurrences) {
           const key = occ.track.id;
           if (!trackMap.has(key)) {
             trackMap.set(key, {
@@ -105,6 +121,7 @@ module.exports = async (req, res) => {
       hasLixeira,
       lixeiraCount,
       lixeiraId: lixeira?.id || null,
+      skippedPlaylists: skipped,
     });
   } catch (err) {
     handleError(res, err);

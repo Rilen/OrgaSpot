@@ -42,6 +42,7 @@ export function renderDuplicatesControls(state, api, container) {
   );
 
   container.innerHTML = `
+    ${renderSkippedWarning(state.skippedPlaylists)}
     <div class="dup-summary">
       <strong>${totalDups}</strong> faixas duplicadas em <strong>${totalExtraTracks}</strong> ocorrências extras.
     </div>
@@ -145,11 +146,21 @@ export async function triggerScan(state, api) {
     state.lixeiraCount = data.lixeiraCount;
     state.lixeiraId = data.lixeiraId;
     state.duplicateCount = data.totalCount || 0;
+    state.skippedPlaylists = data.skippedPlaylists || [];
+
+    if (state.skippedPlaylists.length > 0) {
+      showToast(
+        `${state.skippedPlaylists.length} playlist(s) pulada(s) por acesso negado (ex: seguidas/restritas).`,
+        'warning',
+        7000
+      );
+    }
 
     if (state.duplicates.length === 0) {
       showToast('Nenhuma duplicata encontrada!', 'success');
       if (controls) {
         controls.innerHTML = `
+          ${renderSkippedWarning(state.skippedPlaylists)}
           <button class="btn btn-primary" id="scanDuplicatesBtn">🔍 Escanear Novamente</button>
           <span style="color: var(--text-secondary); margin-left: 1rem;">Tudo limpo!</span>
         `;
@@ -300,6 +311,23 @@ function formatDate(dateString) {
     month: '2-digit',
     year: 'numeric',
   });
+}
+
+function renderSkippedWarning(skipped) {
+  if (!skipped || skipped.length === 0) return '';
+  const list = skipped
+    .slice(0, 5)
+    .map((s) => `<li>${escapeHtml(s.name)}</li>`)
+    .join('');
+  const extra = skipped.length > 5
+    ? `<li>... e mais ${skipped.length - 5} playlist(s)</li>`
+    : '';
+  return `
+    <div class="dup-summary" style="border-color:var(--warning);">
+      <strong>⚠ ${skipped.length} playlist(s) pulada(s)</strong> por acesso negado (playlists seguidas/restritas ou indisponíveis).
+      <ul style="margin:0.4rem 0 0 1.2rem;color:var(--text-secondary);font-size:0.82rem;">${list}${extra}</ul>
+    </div>
+  `;
 }
 
 function escapeHtml(str) {
